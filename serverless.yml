@@ -1,0 +1,106 @@
+org: benproject
+service: stock-pipeline
+
+plugins:
+  - serverless-s3-sync
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: us-east-1
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${sls:stage}-movers
+    MASSIVE_API_KEY: ${env:MASSIVE_API_KEY} 
+    FINNHUB_API_KEY: ${env:FINNHUB_API_KEY}
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:Query
+            - dynamodb:Scan
+          Resource: 
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+  httpApi:
+    cors:
+      allowedOrigins:
+        - 'http://localhost:5173'
+        - 'http://stock-pipeline-dev-frontend-bucket.s3-website-us-east-1.amazonaws.com' 
+      allowedHeaders:
+        - Content-Type
+      allowedMethods:
+        - GET
+
+# --- THE NUCLEAR OPTION FOR FILE SIZE ---
+package:
+  patterns:
+    - '!**'          # 1. Exclude absolutely everything in the folder (dist, src, .git, etc)
+    - 'iac.js'       # 2. Explicitly include ONLY your backend file
+    - 'package.json' # 3. Explicitly include package.json
+    - 'node_modules/dotenv/**'
+
+functions:
+  ingestStocks:
+    handler: iac.ingest
+    timeout: 180
+    events:
+      - schedule: rate(24 hours) 
+
+  getMovers:
+    handler: iac.get_movers
+    events:
+      - httpApi: 
+          path: /movers
+          method: get
+          # (routeSettings removed so the deployment won't crash)
+
+custom:
+  s3Sync:
+    - bucketName: ${self:service}-${sls:stage}-frontend-bucket
+      localDir: dist 
+
+resources:
+  Resources:
+    MoversTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: category
+            AttributeType: S
+          - AttributeName: date
+            AttributeType: S
+        KeySchema:
+          - AttributeName: category
+            KeyType: HASH
+          - AttributeName: date
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+    FrontendBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:service}-${sls:stage}-frontend-bucket
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+
+    FrontendBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref FrontendBucket
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal: "*"
+              Action: "s3:GetObject"
+              Resource: !Join ["", ["arn:aws:s3:::", !Ref FrontendBucket, "/*"]]
