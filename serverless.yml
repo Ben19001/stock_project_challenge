@@ -34,12 +34,12 @@ provider:
       allowedMethods:
         - GET
 
-# --- THE NUCLEAR OPTION FOR FILE SIZE ---
+
 package:
   patterns:
-    - '!**'          # 1. Exclude absolutely everything in the folder (dist, src, .git, etc)
-    - 'iac.js'       # 2. Explicitly include ONLY your backend file
-    - 'package.json' # 3. Explicitly include package.json
+    - '!**'          
+    - 'iac.js'       
+    - 'package.json' 
     - 'node_modules/dotenv/**'
 
 functions:
@@ -55,7 +55,6 @@ functions:
       - httpApi: 
           path: /movers
           method: get
-          # (routeSettings removed so the deployment won't crash)
 
 custom:
   s3Sync:
