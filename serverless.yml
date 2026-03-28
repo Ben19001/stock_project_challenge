@@ -63,7 +63,7 @@ functions:
 custom:
   s3Sync:
     - bucketName: ${self:service}-${sls:stage}-frontend-bucket
-      localDir: dist 
+      localDir: frontend/vite-app/dist
 
 resources:
   Resources:
