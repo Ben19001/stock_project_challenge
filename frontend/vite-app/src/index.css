@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: hsl(220 20% 97%);
+  --color-foreground: hsl(220 30% 10%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(220 30% 10%);
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(220 30% 10%);
+  --color-primary: hsl(220 70% 50%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-secondary: hsl(220 15% 92%);
+  --color-secondary-foreground: hsl(220 30% 15%);
+  --color-muted: hsl(220 15% 94%);
+  --color-muted-foreground: hsl(220 10% 45%);
+  --color-accent: hsl(220 15% 92%);
+  --color-accent-foreground: hsl(220 30% 15%);
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-gain: hsl(152 60% 40%);
+  --color-gain-foreground: hsl(0 0% 100%);
+  --color-loss: hsl(0 72% 51%);
+  --color-loss-foreground: hsl(0 0% 100%);
+  --color-border: hsl(220 15% 88%);
+  --color-input: hsl(220 15% 88%);
+  --color-ring: hsl(220 70% 50%);
+  --radius: 0.75rem;
+  --color-sidebar-background: hsl(0 0% 98%);
+  --color-sidebar-foreground: hsl(240 5.3% 26.1%);
+  --color-sidebar-primary: hsl(240 5.9% 10%);
+  --color-sidebar-primary-foreground: hsl(0 0% 98%);
+  --color-sidebar-accent: hsl(240 4.8% 95.9%);
+  --color-sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --color-sidebar-border: hsl(220 13% 91%);
+  --color-sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
