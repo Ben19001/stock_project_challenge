@@ -40,6 +40,9 @@ package:
     - '!**'          
     - 'iac.js'       
     - 'package.json' 
+    - '!**'          
+    - 'iac.js'       
+    - 'package.json' 
     - 'node_modules/dotenv/**'
 
 functions:
@@ -55,6 +58,7 @@ functions:
       - httpApi: 
           path: /movers
           method: get
+          
 
 custom:
   s3Sync:
