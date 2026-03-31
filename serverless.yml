@@ -50,7 +50,7 @@ functions:
     handler: iac.ingest
     timeout: 180
     events:
-      - schedule: rate(24 hours) 
+      - schedule: cron(0 21 ? * MON-FRI *) 
 
   getMovers:
     handler: iac.get_movers
