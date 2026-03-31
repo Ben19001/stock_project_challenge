@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, PutCommand, ScanCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({});
 const dynamo = DynamoDBDocumentClient.from(client);
@@ -74,15 +74,20 @@ export const ingest = async (event) => {
 
 export const get_movers = async (event) => {
     try {
-        const result = await dynamo.send(new ScanCommand({
+        const result = await dynamo.send(new QueryCommand({
             TableName: tableName,
-            Limit: 7
+            KeyConditionExpression: "category = :cat",
+            ExpressionAttributeValues: {
+                ":cat": "WINNER" 
+            },
+            ScanIndexForward: false, // Sorts dates descending (Newest first!)
+            Limit: 7 
         }));
 
         return {
             statusCode: 200,
             headers: {
-                "Access-Control-Allow-Origin": "*",
+                // "Access-Control-Allow-Origin": "*",
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(result.Items)
