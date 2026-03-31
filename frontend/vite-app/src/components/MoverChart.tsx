@@ -44,6 +44,10 @@ export function MoverChart({ data }: MoverChartProps) {
               tick={{ fontSize: 12 }}
               tickLine={false}
               tickFormatter={(v) => `${v}%`}
+              domain={[
+                (dataMin) => Math.min(0, dataMin), 
+                (dataMax) => Math.max(0, dataMax)  
+              ]}
             />
             <Tooltip
               content={({ active, payload }) => {
