@@ -29,8 +29,8 @@ export async function fetchTopMovers(): Promise<StockMover[]> {
   
   const data = await response.json();
 
-  // Map the DynamoDB data to exactly match the StockMover interface
-  return data.map((item: any) => {
+  // 1. Map the DynamoDB data directly into a new array
+  const mappedData: StockMover[] = data.map((item: any) => {
     const close = item.closePrice || 0;
     const percentChange = item.percentChange || 0;
     
@@ -39,15 +39,20 @@ export async function fetchTopMovers(): Promise<StockMover[]> {
     const open = percentChange !== 0 
       ? close / (1 + (percentChange / 100)) 
       : close;
-
+  
     return {
       date: item.date,
       ticker: item.ticker,
-      company: TICKER_NAMES[item.ticker] || item.ticker, // Add the company name
+      company: TICKER_NAMES[item.ticker] || item.ticker,
       open: open,
       close: close,
       percentChange: percentChange
     };
+  });
+
+  // 2. Sort the array by date in descending order (newest first)
+  return mappedData.sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 }
 
