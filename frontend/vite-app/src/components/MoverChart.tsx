@@ -43,7 +43,7 @@ export function MoverChart({ data }: MoverChartProps) {
             <YAxis
               tick={{ fontSize: 12 }}
               tickLine={false}
-              tickFormatter={(v) => `${v}%`}
+              tickFormatter={(v) => `${Number(v).toFixed(2)}%`}
               domain={[
                 (dataMin) => Math.min(0, dataMin), 
                 (dataMax) => Math.max(0, dataMax)  
